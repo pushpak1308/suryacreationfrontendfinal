@@ -1,0 +1,210 @@
+/* ===== PREMIUM NAVBAR ===== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  height: 72px;
+  padding: 0 32px;
+
+  /* DARKER GLASS FOR READABILITY */
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 20, 0.85),
+    rgba(10, 10, 20, 0.65)
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ===== LOGO ===== */
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+
+  /* BRIGHT PREMIUM GRADIENT */
+  background: linear-gradient(
+    90deg,
+    #fde047,
+    #f472b6,
+    #c084fc
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 0 12px rgba(253, 224, 71, 0.35),
+    0 0 24px rgba(192, 132, 252, 0.25);
+
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+/* ===== ACTIONS ===== */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* ===== BASE BUTTON ===== */
+.nav-actions button {
+  background: transparent;
+  border: none;
+
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+
+  /* HIGH CONTRAST TEXT */
+  color: #f9fafb;
+
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 999px;
+
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+
+  transition: all 0.25s ease;
+}
+
+/* ===== HOVER EFFECT ===== */
+.nav-actions button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+}
+
+/* ===== CART ===== */
+.cart-btn {
+  position: relative;
+}
+
+/* CART COUNT BADGE */
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+
+  background: linear-gradient(135deg, #fb7185, #ec4899);
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  padding: 3px 7px;
+  border-radius: 999px;
+
+  box-shadow:
+    0 0 10px rgba(236, 72, 153, 0.6),
+    0 0 18px rgba(251, 113, 133, 0.4);
+}
+
+/* ===== NAV LEFT WRAPPER ===== */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== BACK BUTTON (PRODUCT PAGE) ===== */
+.nav-back-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  color: #f9fafb;
+  font-size: 18px;
+  font-weight: 800;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.25),
+    inset 0 0 8px rgba(255, 255, 255, 0.15);
+
+  transition: all 0.25s ease;
+}
+
+.nav-back-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 0 18px rgba(255, 255, 255, 0.35),
+    inset 0 0 12px rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* ===== DESKTOP: HIDE BACK BUTTON ===== */
+@media (min-width: 768px) {
+  .nav-back-btn {
+    display: none;
+  }
+}
+
+
+/* ===== LOGIN / LOGOUT (PRIMARY CTA) ===== */
+.login-btn {
+  background: linear-gradient(
+    135deg,
+    #fde047,
+    #f59e0b
+  );
+
+  color: #111827;
+  font-weight: 900;
+
+  padding: 9px 20px;
+
+  text-shadow: none;
+
+  box-shadow:
+    0 10px 28px rgba(253, 224, 71, 0.45),
+    inset 0 0 0 rgba(255,255,255,0);
+}
+
+.login-btn:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 36px rgba(253, 224, 71, 0.55);
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 640px) {
+  .navbar {
+    padding: 0 18px;
+    height: 64px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .nav-actions {
+    gap: 10px;
+  }
+
+  .nav-actions button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}

@@ -1,0 +1,60 @@
+.admin-users-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  overflow-x: auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.admin-users-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.admin-users-table tr:hover {
+  background: #f3f4f6;
+}
+
+/* ROLE PILL */
+.role-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role-pill.ADMIN {
+  background: #111;
+  color: #ffcc00;
+}
+
+.role-pill.USER {
+  background: #e5e7eb;
+  color: #111;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .admin-users-table {
+    font-size: 13px;
+  }
+
+  .admin-users-table th,
+  .admin-users-table td {
+    padding: 10px;
+  }
+}

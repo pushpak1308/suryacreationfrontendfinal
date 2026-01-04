@@ -1,0 +1,294 @@
+/* ================= PAGE ================= */
+.orders-page {
+  max-width: 980px;
+  padding: 0 20px;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+}
+
+.orders-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 36px;
+  color: #111;
+  letter-spacing: -0.4px;
+}
+
+.orders-empty {
+  text-align: center;
+  margin-top: 80px;
+  color: #888;
+}
+
+/* ================= ORDER CARD ================= */
+.order-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 26px;
+  margin-bottom: 28px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.06),
+    0 4px 10px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-4px);
+}
+
+.order-card.expanded {
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* ================= HEADER ================= */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.order-id {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+.order-date {
+  font-size: 13px;
+  color: #888;
+  margin-top: 6px;
+}
+
+.order-header-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ================= STATUS ================= */
+.order-status {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.order-status.created {
+  background: rgba(0, 122, 255, 0.14);
+  color: #007aff;
+}
+
+.order-status.processing {
+  background: rgba(255, 159, 10, 0.16);
+  color: #ff9f0a;
+}
+
+.order-status.shipped {
+  background: rgba(88, 86, 214, 0.16);
+  color: #5856d6;
+}
+
+.order-status.delivered {
+  background: rgba(52, 199, 89, 0.18);
+  color: #34c759;
+}
+
+.order-status.cancelled {
+  background: rgba(255, 59, 48, 0.18);
+  color: #ff3b30;
+}
+
+/* ================= PAYMENT ================= */
+.payment-chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+.payment-chip.cod {
+  background: rgba(255, 159, 10, 0.18);
+  color: #ff9f0a;
+}
+
+.payment-chip.online {
+  background: rgba(52, 199, 89, 0.18);
+  color: #34c759;
+}
+
+/* ================= TOTAL ================= */
+.order-total {
+  margin-top: 18px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* ================= EXPAND ================= */
+.order-details {
+  margin-top: 20px;
+  animation: fadeSlide 0.35s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= ITEMS ================= */
+.order-items {
+  margin-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 16px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.order-item-left {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.order-item-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #f2f2f2;
+}
+
+.order-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+}
+
+.order-item-variant {
+  font-size: 12px;
+  color: #888;
+}
+
+.order-item-right {
+  font-weight: 600;
+  color: #222;
+}
+
+/* ================= ACTION ================= */
+.cancel-order-btn {
+  margin-top: 22px;
+  background: linear-gradient(135deg, #ff5f5f, #ff3b3b);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ================= TIMELINE ================= */
+.order-timeline {
+  margin-top: 24px;
+  padding-left: 18px;
+  border-left: 2px solid rgba(0, 0, 0, 0.08);
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  padding: 14px 0 14px 12px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -10px;
+  top: 18px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d1d1d6; /* default inactive */
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Completed steps */
+.timeline-item.reached .timeline-dot {
+  background: #34c759;
+  box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.2);
+}
+
+/* Cancelled */
+.timeline-item.cancelled .timeline-dot {
+  background: #ff3b30;
+  box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.2);
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-status {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+
+.cancel-order-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(255, 75, 75, 0.35);
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 640px) {
+  .orders-title {
+    font-size: 26px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .order-header-right {
+    align-self: flex-start;
+  }
+
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

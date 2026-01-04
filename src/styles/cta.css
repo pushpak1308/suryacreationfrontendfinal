@@ -1,0 +1,85 @@
+/* ============ PREMIUM CTA (BLACK × YELLOW) ============ */
+.cta-premium {
+  padding: 70px 20px;
+  background: linear-gradient(
+    180deg,
+    #0b0b0b 0%,
+    #000000 100%
+  );
+  text-align: center;
+  color: #ffffff;
+  position: relative;
+}
+
+/* subtle top divider glow */
+.cta-premium::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 160px;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #f5c542,
+    transparent
+  );
+}
+
+/* INNER */
+.cta-premium-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* HEADLINE */
+.cta-premium-inner h2 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  margin-bottom: 14px;
+}
+
+/* SUBTEXT */
+.cta-premium-inner p {
+  font-size: 16px;
+  color: #cfcfcf;
+  margin-bottom: 36px;
+}
+
+/* BUTTON */
+.cta-premium-btn {
+  padding: 14px 34px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    #f5c542,
+    #ffdd6b
+  );
+  color: #000;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition: all 0.25s ease;
+  box-shadow: 0 12px 30px rgba(245, 197, 66, 0.35);
+}
+
+.cta-premium-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(245, 197, 66, 0.45);
+}
+
+/* ============ MOBILE ============ */
+@media (max-width: 600px) {
+  .cta-premium-inner h2 {
+    font-size: 24px;
+  }
+
+  .cta-premium-inner p {
+    font-size: 14px;
+  }
+}

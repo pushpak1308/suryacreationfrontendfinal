@@ -1,0 +1,59 @@
+/* ============ GIFT DISCOVERY STRIP ============ */
+.gift-strip {
+  background: #0b0b0b;
+  padding: 18px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gift-strip-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+}
+
+/* ITEM */
+.gift-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.gift-strip-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* ICON */
+.gift-strip-icon {
+  font-size: 20px;
+}
+
+/* TEXT */
+.gift-strip-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ============ MOBILE ============ */
+@media (max-width: 768px) {
+  .gift-strip-inner {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .gift-strip-inner::-webkit-scrollbar {
+    display: none;
+  }
+}

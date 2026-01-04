@@ -1,0 +1,50 @@
+.order-timeline {
+  margin-top: 24px;
+  padding-left: 20px;
+  border-left: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -11px;
+  top: 18px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d1d1d6;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
+}
+
+.timeline-item.reached .timeline-dot {
+  background: #34c759;
+  box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.22);
+}
+
+.timeline-item.cancelled .timeline-dot {
+  background: #ff3b30;
+  box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.22);
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-status {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
