@@ -42,7 +42,7 @@ const Checkout = () => {
     }
 
     axios
-      .get("http://localhost:8000/api/user/me", {
+      .get("https://surya-creations.onrender.com/api/user/me", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) =>
@@ -77,7 +77,6 @@ const Checkout = () => {
     customImages: item.customImages || [], // ✅ ADD THIS
   }));
 
-
   /* ================= VALIDATION ================= */
   const isAddressValid =
     address.name &&
@@ -99,7 +98,7 @@ const Checkout = () => {
     try {
       // CREATE ORDER
       const orderRes = await axios.post(
-        "http://localhost:8000/api/orders",
+        "https://surya-creations.onrender.com/api/orders",
         {
           items: orderItems,
           total,
@@ -114,11 +113,11 @@ const Checkout = () => {
       );
 
       // ONLINE PAYMENT
-        const orderId = orderRes.data.id;
-        sessionStorage.setItem("LAST_ORDER_ID", orderId);
+      const orderId = orderRes.data.id;
+      sessionStorage.setItem("LAST_ORDER_ID", orderId);
 
       const paymentRes = await axios.post(
-        "http://localhost:8000/api/payment/create",
+        "https://surya-creations.onrender.com/api/payment/create",
         { amount: total, orderId }
       );
 

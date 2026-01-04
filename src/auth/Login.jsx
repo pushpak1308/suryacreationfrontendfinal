@@ -15,7 +15,7 @@ export default function Login() {
       const firebaseToken = await result.user.getIdToken();
 
       const res = await axios.post(
-        "http://localhost:8000/api/auth/verify",
+        "https://surya-creations.onrender.com/api/auth/verify",
         {},
         {
           headers: {

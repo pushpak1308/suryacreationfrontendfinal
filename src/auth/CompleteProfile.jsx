@@ -18,7 +18,7 @@ export default function CompleteProfile() {
 
     try {
       await axios.post(
-        "http://localhost:8000/api/user/profile",
+        "https://surya-creations.onrender.com/api/user/profile",
         {
           name,
           address,

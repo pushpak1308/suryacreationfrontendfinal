@@ -18,7 +18,7 @@ const OrderHistory = () => {
     }
 
     axios
-      .get("http://localhost:8000/api/orders", {
+      .get("https://surya-creations.onrender.com/api/orders", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -34,7 +34,7 @@ const OrderHistory = () => {
 
     axios
       .put(
-        `http://localhost:8000/api/orders/${orderId}/cancel`,
+        `https://surya-creations.onrender.com/api/orders/${orderId}/cancel`,
         {},
         {
           headers: {

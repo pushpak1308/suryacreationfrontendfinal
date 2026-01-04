@@ -30,7 +30,7 @@ const SearchResults = () => {
      =============================== */
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetch("http://localhost:8000/api/products")
+      fetch("https://surya-creations.onrender.com/api/products")
         .then((res) => res.json())
         .then((data) => {
           const searched = data.filter((p) =>

@@ -9,7 +9,9 @@ const AdminNavbar = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/admin/orders/pending-count")
+      .get(
+        "https://surya-creations.onrender.com/api/admin/orders/pending-count"
+      )
       .then((res) => setPendingCount(res.data.count))
       .catch(() => {});
   }, []);

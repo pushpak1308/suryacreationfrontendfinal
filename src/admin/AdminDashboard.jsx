@@ -31,7 +31,7 @@ const AdminDashboard = () => {
   const [custom, setCustom] = useState({ from: "", to: "" });
 
   useEffect(() => {
-    let url = "http://localhost:8000/api/admin/dashboard";
+    let url = "https://surya-creations.onrender.com/api/admin/dashboard";
 
     if (range === "30") {
       const to = new Date().toISOString().slice(0, 10);

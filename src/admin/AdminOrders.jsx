@@ -20,7 +20,7 @@ const AdminOrders = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/admin/orders")
+      .get("https://surya-creations.onrender.com/api/admin/orders")
       .then((res) => setOrders(res.data))
       .catch(console.error);
   }, []);
@@ -40,20 +40,19 @@ const AdminOrders = () => {
 
     return counts;
   }, [orders]);
-    
-    const exportCsv = () => {
-      const params = new URLSearchParams();
 
-      if (statusFilter !== "ALL") params.set("status", statusFilter);
-      if (fromDate) params.set("from", fromDate);
-      if (toDate) params.set("to", toDate);
+  const exportCsv = () => {
+    const params = new URLSearchParams();
 
-      window.open(
-        `http://localhost:8000/api/admin/orders/export?${params.toString()}`,
-        "_blank"
-      );
-    };
+    if (statusFilter !== "ALL") params.set("status", statusFilter);
+    if (fromDate) params.set("from", fromDate);
+    if (toDate) params.set("to", toDate);
 
+    window.open(
+      `https://surya-creations.onrender.com/api/admin/orders/export?${params.toString()}`,
+      "_blank"
+    );
+  };
 
   /* ===============================
      FILTERED ORDERS
@@ -78,9 +77,12 @@ const AdminOrders = () => {
 
   const updateStatus = (orderId, newStatus) => {
     axios
-      .put(`http://localhost:8000/api/admin/orders/${orderId}/status`, {
-        status: newStatus,
-      })
+      .put(
+        `https://surya-creations.onrender.com/api/admin/orders/${orderId}/status`,
+        {
+          status: newStatus,
+        }
+      )
       .then(() => {
         setOrders((prev) =>
           prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
@@ -90,7 +92,7 @@ const AdminOrders = () => {
 
   const downloadImages = async (orderId) => {
     const res = await fetch(
-      `http://localhost:8000/api/admin/orders/${orderId}/images/zip`
+      `https://surya-creations.onrender.com/api/admin/orders/${orderId}/images/zip`
     );
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);

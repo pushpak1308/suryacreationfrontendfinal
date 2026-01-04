@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/api/products";
+const API_URL = "https://surya-creations.onrender.com/api/products";
 
 export const createProduct = async (productData) => {
   const response = await fetch(API_URL, {

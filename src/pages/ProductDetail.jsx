@@ -8,9 +8,9 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-    const [product, setProduct] = useState(null);
-      const [uploadProgress, setUploadProgress] = useState(0);
-      const [uploadMessage, setUploadMessage] = useState("");
+  const [product, setProduct] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadMessage, setUploadMessage] = useState("");
 
   const [selected, setSelected] = useState({
     variantValue: "",
@@ -27,7 +27,7 @@ const ProductDetail = () => {
 
   /* ================= FETCH PRODUCT ================= */
   useEffect(() => {
-    fetch(`http://localhost:8000/api/products/${id}`)
+    fetch(`https://surya-creations.onrender.com/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);
@@ -115,9 +115,7 @@ const ProductDetail = () => {
 
   /* ================= IMAGE UPLOAD (OPTIONAL) ================= */
 
-    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-    
-
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
   const CLOUD_NAME = "ddvdtpss6";
   const UPLOAD_PRESET = "surya-creations";
@@ -177,8 +175,6 @@ const ProductDetail = () => {
     setUploadProgress(100);
     setTimeout(() => setUploadProgress(0), 600);
   };
-
-
 
   const removeImage = (index) => {
     const updated = customImages.filter((_, i) => i !== index);

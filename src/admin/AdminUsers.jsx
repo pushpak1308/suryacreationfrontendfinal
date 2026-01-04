@@ -9,7 +9,7 @@ const AdminUsers = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/admin/users", {
+      .get("https://surya-creations.onrender.com/api/admin/users", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -55,7 +55,7 @@ const AdminUsers = () => {
                   <td>
                     <span className={`role-pill ${u.role}`}>{u.role}</span>
                   </td>
-                  <td>{u.address }</td>
+                  <td>{u.address}</td>
                 </tr>
               ))}
             </tbody>
