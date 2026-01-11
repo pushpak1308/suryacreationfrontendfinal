@@ -41,12 +41,18 @@ const AdminNavbar = () => {
           Product List
         </Link>
 
+        {/* ✅ NEW: BANNERS */}
+        <Link to="/admin/banners" className={isActive("/admin/banners")}>
+          Banners
+        </Link>
+
         <Link to="/admin/orders" className={isActive("/admin/orders")}>
           Orders
           {pendingCount > 0 && (
             <span className="order-badge">{pendingCount}</span>
           )}
         </Link>
+
         <Link to="/admin/users" className={isActive("/admin/users")}>
           Users
         </Link>

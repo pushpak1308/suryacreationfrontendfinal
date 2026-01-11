@@ -1,16 +1,31 @@
 const MobileFilters = ({ open, onClose, products, filters, setFilters }) => {
   if (!open) return null;
 
-  const categories = [...new Set(products.map((p) => p.category))];
-  const materials = [
-    ...new Set(products.flatMap((p) => p.variants.map((v) => v.variantValue))),
-  ];
-  const shapes = [
-    ...new Set(products.flatMap((p) => p.variants.map((v) => v.shape))),
-  ];
-  const sizes = [
-    ...new Set(products.flatMap((p) => p.variants.map((v) => v.size))),
-  ];
+  /* ===============================
+     SAFE UNIQUE HELPERS
+     =============================== */
+  const unique = (arr) => [...new Set(arr.filter(Boolean))];
+
+  /* ===============================
+     DATA SOURCES
+     =============================== */
+  const categories = unique(products.map((p) => p.category?.toLowerCase()));
+
+  const materials = unique(
+    products.flatMap((p) => p.variants.map((v) => v.variantValue))
+  );
+
+  const shapes = unique(
+    products.flatMap((p) => p.variants.map((v) => v.shape))
+  );
+
+  const sizes = unique(products.flatMap((p) => p.variants.map((v) => v.size)));
+
+  /* ===============================
+     LABEL FORMATTER
+     =============================== */
+  const formatLabel = (text) =>
+    text.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <div className="mobile-filter-overlay" onClick={onClose}>
@@ -24,6 +39,7 @@ const MobileFilters = ({ open, onClose, products, filters, setFilters }) => {
         </div>
 
         <div className="drawer-body">
+          {/* CATEGORY */}
           <label>Category</label>
           <select
             value={filters.category}
@@ -34,11 +50,12 @@ const MobileFilters = ({ open, onClose, products, filters, setFilters }) => {
             <option value="">All</option>
             {categories.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {formatLabel(c)}
               </option>
             ))}
           </select>
 
+          {/* MATERIAL */}
           <label>Material</label>
           <select
             value={filters.material}
@@ -54,6 +71,7 @@ const MobileFilters = ({ open, onClose, products, filters, setFilters }) => {
             ))}
           </select>
 
+          {/* SHAPE */}
           <label>Shape</label>
           <select
             value={filters.shape}
@@ -67,6 +85,7 @@ const MobileFilters = ({ open, onClose, products, filters, setFilters }) => {
             ))}
           </select>
 
+          {/* SIZE */}
           <label>Size</label>
           <select
             value={filters.size}
@@ -80,6 +99,7 @@ const MobileFilters = ({ open, onClose, products, filters, setFilters }) => {
             ))}
           </select>
 
+          {/* PRICE */}
           <label>Max Price: ₹{filters.maxPrice}</label>
           <input
             type="range"

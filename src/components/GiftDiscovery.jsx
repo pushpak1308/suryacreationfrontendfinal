@@ -2,35 +2,19 @@ import { useNavigate } from "react-router-dom";
 import "../styles/giftDiscovery.css";
 
 const giftOptions = [
-  {
-    title: "Birthday",
-    icon: "🎂",
-    link: "/products?occasion=birthday",
-  },
-  {
-    title: "Anniversary",
-    icon: "❤️",
-    link: "/products?occasion=anniversary",
-  },
-  {
-    title: "Home Décor",
-    icon: "🖼️",
-    link: "/products?category=decor",
-  },
-  {
-    title: "Stationery",
-    icon: "📒",
-    link: "/products?category=stationery",
-  },
-  {
-    title: "Corporate",
-    icon: "🎁",
-    link: "/products?occasion=corporate",
-  },
+  { title: "Birthday", icon: "🎂", occasion: "birthday" },
+  { title: "Anniversary", icon: "❤️", occasion: "anniversary" },
+  { title: "Home Décor", icon: "🖼️", occasion: "decor" },
+  { title: "Stationery", icon: "📒", occasion: "stationery" },
+  { title: "Corporate", icon: "🎁", occasion: "corporate" },
 ];
 
 const GiftDiscovery = () => {
   const navigate = useNavigate();
+
+  const handleClick = (gift) => {
+    navigate(`/search?occasion=${gift.occasion}`);
+  };
 
   return (
     <section className="gift-strip">
@@ -39,7 +23,7 @@ const GiftDiscovery = () => {
           <div
             key={index}
             className="gift-strip-item"
-            onClick={() => navigate(gift.link)}
+            onClick={() => handleClick(gift)}
           >
             <span className="gift-strip-icon">{gift.icon}</span>
             <span className="gift-strip-text">{gift.title}</span>

@@ -1,22 +1,38 @@
 const Filters = ({ products, filters, setFilters }) => {
-  const categories = [...new Set(products.map((p) => p.category))];
+  /* ===============================
+     SAFE UNIQUE HELPERS
+     =============================== */
+  const unique = (arr) => [...new Set(arr.filter(Boolean))];
 
-  const materials = [
-    ...new Set(products.flatMap((p) => p.variants.map((v) => v.variantValue))),
-  ];
+  /* ===============================
+     CATEGORY (slug based)
+     =============================== */
+  const categories = unique(products.map((p) => p.category?.toLowerCase()));
 
-  const shapes = [
-    ...new Set(products.flatMap((p) => p.variants.map((v) => v.shape))),
-  ];
+  /* ===============================
+     VARIANT-LEVEL FILTERS
+     =============================== */
+  const materials = unique(
+    products.flatMap((p) => p.variants.map((v) => v.variantValue))
+  );
 
-  const sizes = [
-    ...new Set(products.flatMap((p) => p.variants.map((v) => v.size))),
-  ];
+  const shapes = unique(
+    products.flatMap((p) => p.variants.map((v) => v.shape))
+  );
+
+  const sizes = unique(products.flatMap((p) => p.variants.map((v) => v.size)));
+
+  /* ===============================
+     UI LABEL FORMATTER
+     =============================== */
+  const formatLabel = (text) =>
+    text.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
     <aside className="filters">
       <h4>Filters</h4>
 
+      {/* CATEGORY */}
       <label>Category</label>
       <select
         value={filters.category}
@@ -25,11 +41,12 @@ const Filters = ({ products, filters, setFilters }) => {
         <option value="">All</option>
         {categories.map((c) => (
           <option key={c} value={c}>
-            {c}
+            {formatLabel(c)}
           </option>
         ))}
       </select>
 
+      {/* MATERIAL */}
       <label>Material</label>
       <select
         value={filters.material}
@@ -43,6 +60,7 @@ const Filters = ({ products, filters, setFilters }) => {
         ))}
       </select>
 
+      {/* SHAPE */}
       <label>Shape</label>
       <select
         value={filters.shape}
@@ -56,6 +74,7 @@ const Filters = ({ products, filters, setFilters }) => {
         ))}
       </select>
 
+      {/* SIZE */}
       <label>Size</label>
       <select
         value={filters.size}
@@ -69,6 +88,7 @@ const Filters = ({ products, filters, setFilters }) => {
         ))}
       </select>
 
+      {/* PRICE */}
       <label>Max Price: ₹{filters.maxPrice}</label>
       <input
         type="range"

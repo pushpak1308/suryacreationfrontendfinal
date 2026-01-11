@@ -8,13 +8,30 @@ import MobileFilters from "../components/MobileFilters";
 
 import "../styles/searchResults.css";
 
+/* ===============================
+   HELPERS
+   =============================== */
+const toSlug = (value = "") => value.toLowerCase().trim().replace(/\s+/g, "-");
+
+const formatLabel = (slug = "") =>
+  slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
 const SearchResults = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
 
+  /* ===============================
+     QUERY PARAMS
+     =============================== */
   const query = params.get("q")?.toLowerCase() || "";
+  const occasion = params.get("occasion")?.toLowerCase() || "";
+  const categoryParam = params.get("category")?.toLowerCase() || "";
 
-  const [products, setProducts] = useState([]);
+  /* ===============================
+     STATE
+     =============================== */
+  const [allProducts, setAllProducts] = useState([]); // RAW API
+  const [products, setProducts] = useState([]); // URL-filtered
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -26,36 +43,56 @@ const SearchResults = () => {
   });
 
   /* ===============================
-     FETCH + SEARCH (DEBOUNCED)
+     FETCH DATA (ONCE)
      =============================== */
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetch("https://surya-creations.onrender.com/api/products")
-        .then((res) => res.json())
-        .then((data) => {
-          const searched = data.filter((p) =>
-            p.name.toLowerCase().includes(query)
-          );
-          setProducts(searched);
-        })
-        .catch(console.error);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query]);
+    fetch("https://surya-creations.onrender.com/api/products")
+      .then((res) => res.json())
+      .then((data) => setAllProducts(data))
+      .catch(console.error);
+  }, []);
 
   /* ===============================
-     FILTER LOGIC
+     APPLY URL FILTERS
+     =============================== */
+  useEffect(() => {
+    let result = allProducts;
+
+    if (query) {
+      result = result.filter((p) => p.name.toLowerCase().includes(query));
+    }
+
+    if (occasion) {
+      result = result.filter(
+        (p) => p.occasion && p.occasion.toLowerCase() === occasion
+      );
+    }
+
+    if (categoryParam) {
+      result = result.filter(
+        (p) => p.category && toSlug(p.category) === categoryParam
+      );
+    }
+
+    setProducts(result);
+
+    // Sync URL category into filter UI
+    setFilters((prev) => ({
+      ...prev,
+      category: categoryParam || "",
+    }));
+  }, [allProducts, query, occasion, categoryParam]);
+
+  /* ===============================
+     UI FILTER LOGIC
      =============================== */
   const filteredProducts = products.filter((product) => {
-    // Category
-    if (filters.category && product.category !== filters.category) return false;
+    if (filters.category && toSlug(product.category) !== filters.category)
+      return false;
 
-    // Min price from variants
     const minPrice = Math.min(...product.variants.map((v) => v.price));
     if (minPrice > filters.maxPrice) return false;
 
-    // Variant-level filters
     return product.variants.some((v) => {
       if (filters.material && v.variantValue !== filters.material) return false;
       if (filters.shape && v.shape !== filters.shape) return false;
@@ -64,9 +101,19 @@ const SearchResults = () => {
     });
   });
 
+  /* ===============================
+     HEADING
+     =============================== */
+  const headingText = occasion
+    ? `Gifts for ${formatLabel(occasion)}`
+    : categoryParam
+    ? `Category: ${formatLabel(categoryParam)}`
+    : query
+    ? `Results for “${query}”`
+    : "All Products";
+
   return (
     <>
-      {/* ✅ NAVBAR ONLY ON SEARCH PAGE */}
       <Navbar />
 
       <div className="search-page">
@@ -77,24 +124,19 @@ const SearchResults = () => {
           setFilters={setFilters}
         />
 
-        {/* RESULTS */}
         <div className="results">
-          {/* SEARCH BAR */}
           <SearchBar />
 
-          {/* MOBILE FILTER BUTTON */}
           <div className="mobile-filter-bar">
             <button onClick={() => setShowMobileFilters(true)}>Filters</button>
           </div>
 
-          <h3>Results for “{query}”</h3>
+          <h3>{headingText}</h3>
 
-          {/* RESULT COUNT */}
           <p className="result-count">
             {filteredProducts.length} products found
           </p>
 
-          {/* ACTIVE FILTER CHIPS */}
           <div className="active-filters">
             {Object.entries(filters).map(([key, value]) =>
               value && key !== "maxPrice" ? (
@@ -108,15 +150,13 @@ const SearchResults = () => {
             )}
           </div>
 
-          {/* EMPTY STATE */}
           {filteredProducts.length === 0 && (
             <div className="empty-state">
               <p>No results found</p>
-              <small>Try changing search terms or removing filters</small>
+              <small>Try changing search terms or filters</small>
             </div>
           )}
 
-          {/* PRODUCT GRID */}
           <div className="product-grid">
             {filteredProducts.map((p) => {
               const minPrice = Math.min(...p.variants.map((v) => v.price));
@@ -142,7 +182,7 @@ const SearchResults = () => {
           </div>
         </div>
 
-        {/* MOBILE FILTER DRAWER */}
+        {/* MOBILE FILTERS */}
         <MobileFilters
           open={showMobileFilters}
           onClose={() => setShowMobileFilters(false)}

@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-/* Public Pages */
+/* ================= PUBLIC PAGES ================= */
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import SearchResults from "./pages/SearchResults";
@@ -9,19 +9,20 @@ import Checkout from "./pages/Checkout";
 import OrderHistory from "./pages/OrderHistory";
 import OrderSuccess from "./pages/OrderSuccess";
 
-/* Auth */
+/* ================= AUTH ================= */
 import Login from "./auth/Login";
 import OtpVerify from "./auth/OtpVerify";
 import CompleteProfile from "./auth/CompleteProfile";
 
-/* Admin */
+/* ================= ADMIN ================= */
 import AdminRoute from "./admin/AdminRoute";
 import AdminDashboard from "./admin/AdminDashboard";
 import AddProduct from "./admin/AddProduct";
 import ProductList from "./admin/ProductList";
 import EditProduct from "./admin/EditProduct";
 import AdminOrders from "./admin/AdminOrders";
-import AdminUsers from "./admin/AdminUsers"; // ✅ NEW
+import AdminUsers from "./admin/AdminUsers";
+import AdminBanners from "./admin/AdminBanners"; // ✅ BANNERS
 
 function App() {
   return (
@@ -87,12 +88,21 @@ function App() {
           }
         />
 
-        {/* ✅ USERS TABLE */}
         <Route
           path="/admin/users"
           element={
             <AdminRoute>
               <AdminUsers />
+            </AdminRoute>
+          }
+        />
+
+        {/* ================= ADMIN BANNERS ================= */}
+        <Route
+          path="/admin/banners"
+          element={
+            <AdminRoute>
+              <AdminBanners />
             </AdminRoute>
           }
         />

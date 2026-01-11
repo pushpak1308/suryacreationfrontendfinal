@@ -1,36 +1,99 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/categories.css";
 
+/* Utility: name → slug */
+const toSlug = (text) =>
+  text
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/'/g, "")
+    .replace(/\s+/g, "-");
+
 const categories = [
   {
-    name: "Photo Frames",
-    image: "https://images.unsplash.com/photo-1524758631624-e2822e304c36",
-    link: "/products?category=frames",
+    name: "Miniature Frames",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767285352/Screenshot_2026-01-01_220515_vaqyo7.png",
   },
   {
-    name: "Photo Gifts",
-    image: "https://images.unsplash.com/photo-1512909006721-3d6018887383",
-    link: "/products?category=photo-gifts",
+    name: "Labels",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767280524/Sheet-label_1725451536_mrfmqg.webp",
   },
   {
-    name: "Notepads",
-    image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8",
-    link: "/products?category=notepads",
+    name: "Customized Gifts",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767282790/Screenshot_2026-01-01_212239_cibwbf.png",
+  },
+  {
+    name: "Customized Frames",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767282478/Screenshot_2026-01-01_211722_hhzdtl.png",
+  },
+  {
+    name: "Custom Acrylic Frames",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767282888/Screenshot_2026-01-01_212417_j3cy2i.png",
+  },
+  {
+    name: "Combos and Hampers",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767282991/Screenshot_2026-01-01_212604_y3uwcn.png",
   },
   {
     name: "Stickers",
-    image: "https://images.unsplash.com/photo-1602526432604-029a709e131c",
-    link: "/products?category=stickers",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767284452/WhatsApp_Image_2025-12-14_at_6.41.37_PM_jnwknl.jpg",
   },
   {
-    name: "Wall Art",
-    image: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
-    link: "/products?category=wall-art",
+    name: "Gifts",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767283590/Screenshot_2026-01-01_213557_dmxmgi.png",
+  },
+  {
+    name: "Photo Frames",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767283656/Screenshot_2026-01-01_213708_ugqhqv.png",
+  },
+  {
+    name: "Clocks",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767284613/Screenshot_2026-01-01_215307_btzimn.png",
+  },
+  {
+    name: "Historical Paintings",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767284820/WhatsApp_Image_2025-12-14_at_7.08.14_PM_1_xikgmk.jpg",
+  },
+  {
+    name: "Scenery",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767284979/WhatsApp_Image_2025-12-14_at_7.10.49_PM_szse95.jpg",
+  },
+  {
+    name: "Albums",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767285607/WhatsApp_Image_2025-12-14_at_4.44.44_PM_jkx8bg.jpg",
+  },
+  {
+    name: "Business Needs",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767285136/Screenshot_2026-01-01_220150_j7n3ok.png",
+  },
+  {
+    name: "Packaging Boxes",
+    image:
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767280357/5.1_1920x_ra0n6y.webp",
   },
 ];
 
 const Categories = () => {
   const navigate = useNavigate();
+
+  const handleClick = (name) => {
+    const slug = toSlug(name);
+    navigate(`/search?category=${slug}`);
+  };
 
   return (
     <section className="premium-categories">
@@ -41,7 +104,7 @@ const Categories = () => {
           <div
             key={index}
             className="category-card"
-            onClick={() => navigate(cat.link)}
+            onClick={() => handleClick(cat.name)}
           >
             <img src={cat.image} alt={cat.name} />
             <div className="category-overlay" />

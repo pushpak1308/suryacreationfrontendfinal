@@ -45,6 +45,7 @@ const AddProduct = () => {
         category: "",
         imageUrl: "",
         description: "",
+        occasion: "",
         variants: [],
       });
     } catch (error) {
@@ -53,88 +54,92 @@ const AddProduct = () => {
     }
   };
 
-    return (
-      <>
-        <AdminNavbar />
-        <div className="admin-container">
-          <h2>Add Product</h2>
+  return (
+    <>
+      <AdminNavbar />
+      <div className="admin-container">
+        <h2>Add Product</h2>
+        <input
+          placeholder="Product Name"
+          value={product.name}
+          onChange={(e) => setProduct({ ...product, name: e.target.value })}
+        />
+        <input
+          placeholder="Category"
+          value={product.category}
+          onChange={(e) => setProduct({ ...product, category: e.target.value })}
+        />
 
-          <input
-            placeholder="Product Name"
-            value={product.name}
-            onChange={(e) => setProduct({ ...product, name: e.target.value })}
-          />
-
-          <input
-            placeholder="Category"
-            value={product.category}
+        <div className="form-group">
+          <select
+            value={product.occasion}
             onChange={(e) =>
-              setProduct({ ...product, category: e.target.value })
+              setProduct({ ...product, occasion: e.target.value })
             }
-          />
-
-          <input
-            placeholder="Image URL"
-            value={product.imageUrl}
-            onChange={(e) =>
-              setProduct({ ...product, imageUrl: e.target.value })
-            }
-          />
-
-          <textarea
-            placeholder="Description"
-            value={product.description}
-            onChange={(e) =>
-              setProduct({ ...product, description: e.target.value })
-            }
-          />
-
-          <h3>Variants</h3>
-
-          {product.variants.map((v, index) => (
-            <div key={index} className="variant-box">
-              <input
-                placeholder="Variant Type"
-                onChange={(e) =>
-                  updateVariant(index, "variantType", e.target.value)
-                }
-              />
-              <input
-                placeholder="Variant Value"
-                onChange={(e) =>
-                  updateVariant(index, "variantValue", e.target.value)
-                }
-              />
-              <input
-                placeholder="Shape"
-                onChange={(e) => updateVariant(index, "shape", e.target.value)}
-              />
-              <input
-                placeholder="Size"
-                onChange={(e) => updateVariant(index, "size", e.target.value)}
-              />
-              <input
-                type="number"
-                placeholder="Quantity"
-                onChange={(e) =>
-                  updateVariant(index, "quantity", e.target.value)
-                }
-              />
-              <input
-                type="number"
-                placeholder="Price"
-                onChange={(e) => updateVariant(index, "price", e.target.value)}
-              />
-            </div>
-          ))}
-
-          <button onClick={addVariant}>+ Add Variant</button>
-          <button className="save-btn" onClick={handleSubmit}>
-            Save Product
-          </button>
+          >
+            <option value="">Select occasion</option>
+            <option value="birthday">Birthday</option>
+            <option value="anniversary">Anniversary</option>
+            <option value="corporate">Corporate</option>
+            <option value="decor">Home Décor</option>
+            <option value="stationery">Stationery</option>
+          </select>
         </div>
-      </>
-    );
+
+        <input
+          placeholder="Image URL"
+          value={product.imageUrl}
+          onChange={(e) => setProduct({ ...product, imageUrl: e.target.value })}
+        />
+        <textarea
+          placeholder="Description"
+          value={product.description}
+          onChange={(e) =>
+            setProduct({ ...product, description: e.target.value })
+          }
+        />
+        <h3>Variants</h3>
+        {product.variants.map((v, index) => (
+          <div key={index} className="variant-box">
+            <input
+              placeholder="Variant Type"
+              onChange={(e) =>
+                updateVariant(index, "variantType", e.target.value)
+              }
+            />
+            <input
+              placeholder="Variant Value"
+              onChange={(e) =>
+                updateVariant(index, "variantValue", e.target.value)
+              }
+            />
+            <input
+              placeholder="Shape"
+              onChange={(e) => updateVariant(index, "shape", e.target.value)}
+            />
+            <input
+              placeholder="Size"
+              onChange={(e) => updateVariant(index, "size", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Quantity"
+              onChange={(e) => updateVariant(index, "quantity", e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Price"
+              onChange={(e) => updateVariant(index, "price", e.target.value)}
+            />
+          </div>
+        ))}
+        <button onClick={addVariant}>+ Add Variant</button>
+        <button className="save-btn" onClick={handleSubmit}>
+          Save Product
+        </button>
+      </div>
+    </>
+  );
 };
 
 export default AddProduct;
