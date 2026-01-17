@@ -28,13 +28,6 @@
 /* DARK OVERLAY */
 .hero-overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.75) 0%,
-    rgba(0, 0, 0, 0.55) 40%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
 }
 
 /* CONTENT */

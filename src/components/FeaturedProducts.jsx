@@ -36,7 +36,7 @@ const FeaturedProducts = () => {
       </div>
 
       <div className="featured-row">
-        {products.slice(0, 6).map((product) => (
+        {products.slice(0, 10).map((product) => (
           <div
             className="featured-card"
             key={product.id}

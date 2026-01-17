@@ -9,20 +9,15 @@ const ProductDetail = () => {
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadMessage, setUploadMessage] = useState("");
 
   const [selected, setSelected] = useState({
     variantValue: "",
     shape: "",
     size: "",
-    availableQty: 0,
   });
 
   const [cartQty, setCartQty] = useState(1);
   const [price, setPrice] = useState(0);
-
-  /* ===== OPTIONAL MULTI IMAGE UPLOAD ===== */
   const [customImages, setCustomImages] = useState([]);
 
   /* ================= FETCH PRODUCT ================= */
@@ -31,67 +26,79 @@ const ProductDetail = () => {
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);
+
         const v = data.variants[0];
 
         setSelected({
           variantValue: v.variantValue,
           shape: v.shape,
           size: v.size,
-          availableQty: v.quantity,
         });
 
         setPrice(v.price);
-        setCartQty(1);
+
+        const initialQty =
+          data.enforceMinQuantity && data.minOrderQuantity
+            ? data.minOrderQuantity
+            : 1;
+
+        setCartQty(initialQty);
       });
   }, [id]);
 
   if (!product) return <p>Loading...</p>;
 
-  /* ================= VARIANT LOGIC ================= */
-  const variantsByMaterial = product.variants.filter(
+  /* ================= VARIANT GROUPING ================= */
+
+  const variantsGroupedByType = product.variants.reduce((acc, v) => {
+    if (!acc[v.variantType]) acc[v.variantType] = [];
+    acc[v.variantType].push(v);
+    return acc;
+  }, {});
+
+  const variantsByValue = product.variants.filter(
     (v) => v.variantValue === selected.variantValue
   );
 
-  const availableShapes = [...new Set(variantsByMaterial.map((v) => v.shape))];
+  const availableShapes = [...new Set(variantsByValue.map((v) => v.shape))];
 
   const availableSizes = [
     ...new Set(
-      variantsByMaterial
+      variantsByValue
         .filter((v) => v.shape === selected.shape)
         .map((v) => v.size)
     ),
   ];
 
+    /* ================= SELECTION HANDLERS ================= */
+    
+
+  const selectVariantValue = (value) => {
+    const first = product.variants.find((v) => v.variantValue === value);
+
+    if (!first) return;
+
+    setSelected({
+      variantValue: first.variantValue,
+      shape: first.shape,
+      size: first.size,
+    });
+
+    setPrice(first.price);
+
+    setCartQty(
+      product.enforceMinQuantity && product.minOrderQuantity
+        ? product.minOrderQuantity
+        : 1
+    );
+  };
+
   const selectOption = (field, value) => {
     let updated = { ...selected, [field]: value };
 
-    if (field === "variantValue") {
-      const first = product.variants.find((v) => v.variantValue === value);
-      updated = {
-        variantValue: first.variantValue,
-        shape: first.shape,
-        size: first.size,
-        availableQty: first.quantity,
-      };
-    }
-
     if (field === "shape") {
-      const first = variantsByMaterial.find((v) => v.shape === value);
-      updated = {
-        ...updated,
-        size: first.size,
-        availableQty: first.quantity,
-      };
-    }
-
-    if (field === "size") {
-      const first = variantsByMaterial.find(
-        (v) => v.shape === updated.shape && v.size === value
-      );
-      updated = {
-        ...updated,
-        availableQty: first.quantity,
-      };
+      const first = variantsByValue.find((v) => v.shape === value);
+      updated = { ...updated, size: first.size };
     }
 
     const match = product.variants.find(
@@ -106,97 +113,39 @@ const ProductDetail = () => {
         variantValue: match.variantValue,
         shape: match.shape,
         size: match.size,
-        availableQty: match.quantity,
       });
       setPrice(match.price);
-      setCartQty(1);
     }
   };
 
-  /* ================= IMAGE UPLOAD (OPTIONAL) ================= */
+  /* ================= MOQ ================= */
 
-  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+  const minQty = product.enforceMinQuantity ? product.minOrderQuantity : 1;
 
-  const CLOUD_NAME = "ddvdtpss6";
-  const UPLOAD_PRESET = "surya-creations";
+  const canProceed = cartQty >= minQty;
 
-  const handleImageUpload = async (e) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+  /* ================= CART ================= */
 
-    setUploadMessage("");
-    setUploadProgress(0);
-
-    const uploadedUrls = [];
-    let rejected = false;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      if (!file.type.startsWith("image/")) continue;
-      if (file.size > MAX_FILE_SIZE) {
-        rejected = true;
-        continue;
-      }
-
-      setUploadProgress(Math.round(((i + 1) / files.length) * 90));
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", UPLOAD_PRESET);
-      formData.append("folder", "surya-creations");
-
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await res.json();
-      uploadedUrls.push(data.secure_url);
-    }
-
-    if (rejected) {
-      setUploadMessage("Some images were skipped (max 2MB allowed).");
-    }
-
-    if (uploadedUrls.length === 0) {
-      setUploadProgress(0);
+  const handleAddToCart = () => {
+    if (!canProceed) {
+      alert(`Minimum order quantity is ${minQty}`);
       return;
     }
 
-    const updated = [...customImages, ...uploadedUrls];
-    setCustomImages(updated);
-
-    sessionStorage.setItem("CUSTOM_IMAGES", JSON.stringify(updated));
-
-    setUploadProgress(100);
-    setTimeout(() => setUploadProgress(0), 600);
-  };
-
-  const removeImage = (index) => {
-    const updated = customImages.filter((_, i) => i !== index);
-    setCustomImages(updated);
-    sessionStorage.setItem("CUSTOM_IMAGES", JSON.stringify(updated));
-  };
-
-  /* ================= CART ================= */
-  const handleAddToCart = () => {
     addToCart({
       productId: product.id,
       productName: product.name,
       image: product.imageUrl,
       variant: {
-        material: selected.variantValue,
+        value: selected.variantValue,
         shape: selected.shape,
         size: selected.size,
-        availableQty: selected.availableQty,
       },
       price,
       cartQty,
-      customImages, // 👈 ARRAY
+      customImages,
+      enforceMinQuantity: product.enforceMinQuantity,
+      minOrderQuantity: product.minOrderQuantity,
     });
 
     window.dispatchEvent(new Event("storage"));
@@ -204,6 +153,11 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = () => {
+    if (!canProceed) {
+      alert(`Minimum order quantity is ${minQty}`);
+      return;
+    }
+
     sessionStorage.setItem(
       "BUY_NOW_ITEM",
       JSON.stringify({
@@ -211,16 +165,18 @@ const ProductDetail = () => {
         productName: product.name,
         image: product.imageUrl,
         variant: {
-          material: selected.variantValue,
+          value: selected.variantValue,
           shape: selected.shape,
           size: selected.size,
-          availableQty: selected.availableQty,
         },
         price,
         cartQty,
-        customImages, // 👈 ARRAY
+        customImages,
+        enforceMinQuantity: product.enforceMinQuantity,
+        minOrderQuantity: product.minOrderQuantity,
       })
     );
+
     navigate("/checkout?mode=buynow");
   };
 
@@ -246,8 +202,6 @@ const ProductDetail = () => {
       <Navbar />
 
       <div className="product-detail">
-        <div className="pd-divider" />
-
         <div className="product-wrapper">
           {/* IMAGE */}
           <div className="product-image">
@@ -259,75 +213,53 @@ const ProductDetail = () => {
             <h2>{product.name}</h2>
             <p className="product-desc">{product.description}</p>
 
-            {renderOptions("Material / Finish", "variantValue", [
-              ...new Set(product.variants.map((v) => v.variantValue)),
-            ])}
-            {renderOptions("Shape", "shape", availableShapes)}
-            {renderOptions("Size", "size", availableSizes)}
+            {/* MOQ */}
+            {product.enforceMinQuantity && (
+              <div className="min-qty-info">
+                Minimum order quantity: <b>{product.minOrderQuantity}</b>
+              </div>
+            )}
 
-            {/* OPTIONAL IMAGE UPLOAD */}
-            <div className="custom-upload">
-              <div className="upload-title">Upload images (optional)</div>
+            {/* VARIANT TYPES AS HEADERS */}
+            {Object.entries(variantsGroupedByType).map(([type, variants]) => (
+              <div key={type} className="option-group">
+                <div className="option-title">{type}</div>
 
-              <label className="upload-box">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  hidden
-                  onChange={handleImageUpload}
-                />
-                <span>Click to upload images</span>
-              </label>
-
-              {/* INLINE MESSAGE */}
-              {uploadMessage && (
-                <div className="upload-warning">{uploadMessage}</div>
-              )}
-
-              {/* PROGRESS BAR */}
-              {uploadProgress > 0 && (
-                <div className="upload-progress">
-                  <div
-                    className="upload-progress-bar"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
+                <div className="option-grid">
+                  {[...new Set(variants.map((v) => v.variantValue))].map(
+                    (value) => (
+                      <div
+                        key={value}
+                        className={`option-card ${
+                          selected.variantValue === value ? "active" : ""
+                        }`}
+                        onClick={() => selectVariantValue(value)}
+                      >
+                        {value}
+                      </div>
+                    )
+                  )}
                 </div>
-              )}
+              </div>
+            ))}
 
-              {/* PREVIEW */}
-              {customImages.length > 0 && (
-                <div className="upload-preview-grid">
-                  {customImages.map((img, i) => (
-                    <div key={i} className="preview-item">
-                      <img src={img} alt="preview" />
-                      <button onClick={() => removeImage(i)}>×</button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {availableShapes.length > 0 &&
+              renderOptions("Shape", "shape", availableShapes)}
+
+            {availableSizes.length > 0 &&
+              renderOptions("Size", "size", availableSizes)}
 
             {/* QTY */}
             <div className="qty-section">
-              <div className="stock">
-                Available: <b>{selected.availableQty}</b>
-              </div>
-
               <div className="qty-selector">
                 <button
-                  disabled={cartQty <= 1}
-                  onClick={() => setCartQty((q) => q - 1)}
+                  disabled={cartQty <= minQty}
+                  onClick={() => setCartQty((q) => Math.max(q - 1, minQty))}
                 >
                   −
                 </button>
                 <span>{cartQty}</span>
-                <button
-                  disabled={cartQty >= selected.availableQty}
-                  onClick={() => setCartQty((q) => q + 1)}
-                >
-                  +
-                </button>
+                <button onClick={() => setCartQty((q) => q + 1)}>+</button>
               </div>
             </div>
 
@@ -336,10 +268,19 @@ const ProductDetail = () => {
 
             {/* CTA */}
             <div className="cta-group">
-              <button className="add-cart-btn" onClick={handleAddToCart}>
+              <button
+                className="add-cart-btn"
+                disabled={!canProceed}
+                onClick={handleAddToCart}
+              >
                 Add to Cart
               </button>
-              <button className="buy-now-btn" onClick={handleBuyNow}>
+
+              <button
+                className="buy-now-btn"
+                disabled={!canProceed}
+                onClick={handleBuyNow}
+              >
                 Buy Now
               </button>
             </div>

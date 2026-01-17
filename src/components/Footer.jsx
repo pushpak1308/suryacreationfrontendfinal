@@ -46,7 +46,7 @@ const Footer = () => {
         {/* LINKS */}
         <div className="footer-col">
           <span onClick={() => navigate("/")}>Home</span>
-          <span onClick={() => navigate("/products")}>Shop</span>
+          <span onClick={() => navigate("/search")}>Shop</span>
           <span onClick={() => navigate("/orders")}>My Orders</span>
         </div>
 

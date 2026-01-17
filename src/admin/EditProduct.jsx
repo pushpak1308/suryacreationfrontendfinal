@@ -11,12 +11,18 @@ const EditProduct = () => {
 
   const [product, setProduct] = useState(null);
 
+  /* ===============================
+     LOAD PRODUCT
+     =============================== */
   useEffect(() => {
     getProductById(id).then((data) => {
-      // 🔒 ensure occasion always exists
       setProduct({
         ...data,
         occasion: data.occasion || "",
+
+        // ✅ MOQ (NULL SAFE)
+        enforceMinQuantity: data.enforceMinQuantity || false,
+        minOrderQuantity: data.minOrderQuantity || "",
       });
     });
   }, [id]);
@@ -59,16 +65,20 @@ const EditProduct = () => {
      =============================== */
   const handleSave = async () => {
     const payload = {
-      name: product.name,
-      category: product.category,
-      imageUrl: product.imageUrl,
-      description: product.description,
-      occasion: product.occasion || null, // ✅ optional
+      ...product, // ✅ KEEP EVERYTHING (IMPORTANT)
+
+      // Normalize optional fields
+      occasion: product.occasion || null,
+
+      // MOQ normalization
+      enforceMinQuantity: product.enforceMinQuantity,
+      minOrderQuantity: product.enforceMinQuantity
+        ? Number(product.minOrderQuantity)
+        : null,
+
+      // Normalize variants
       variants: product.variants.map((v) => ({
-        variantType: v.variantType,
-        variantValue: v.variantValue,
-        shape: v.shape,
-        size: v.size,
+        ...v,
         quantity: Number(v.quantity),
         price: Number(v.price),
       })),
@@ -79,6 +89,7 @@ const EditProduct = () => {
     navigate("/admin/products");
   };
 
+
   return (
     <>
       <AdminNavbar />
@@ -86,7 +97,7 @@ const EditProduct = () => {
       <div className="admin-container">
         <h2>Edit Product</h2>
 
-        {/* BASIC INFO */}
+        {/* ================= BASIC INFO ================= */}
         <input
           placeholder="Product name"
           value={product.name}
@@ -94,7 +105,7 @@ const EditProduct = () => {
         />
 
         <input
-          placeholder="Category"
+          placeholder="Category (slug format)"
           value={product.category}
           onChange={(e) => setProduct({ ...product, category: e.target.value })}
         />
@@ -105,7 +116,7 @@ const EditProduct = () => {
           onChange={(e) => setProduct({ ...product, imageUrl: e.target.value })}
         />
 
-        {/* OCCASION */}
+        {/* ================= OCCASION ================= */}
         <div className="form-group">
           <label>Occasion</label>
           <select
@@ -123,7 +134,7 @@ const EditProduct = () => {
           </select>
         </div>
 
-        {/* DESCRIPTION */}
+        {/* ================= DESCRIPTION ================= */}
         <textarea
           placeholder="Product description"
           value={product.description}
@@ -132,7 +143,43 @@ const EditProduct = () => {
           }
         />
 
-        {/* VARIANTS */}
+        {/* ================= MOQ SECTION ================= */}
+        <div className="form-group">
+          <label style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <input
+              type="checkbox"
+              checked={product.enforceMinQuantity}
+              onChange={(e) =>
+                setProduct({
+                  ...product,
+                  enforceMinQuantity: e.target.checked,
+                  minOrderQuantity: e.target.checked
+                    ? product.minOrderQuantity
+                    : "",
+                })
+              }
+            />
+            Enforce Minimum Order Quantity
+          </label>
+        </div>
+
+        {product.enforceMinQuantity && (
+          <input
+            type="number"
+            min="1"
+            placeholder="Minimum Quantity Required"
+            value={product.minOrderQuantity}
+            onChange={(e) =>
+              setProduct({
+                ...product,
+                minOrderQuantity: e.target.value,
+              })
+            }
+            required
+          />
+        )}
+
+        {/* ================= VARIANTS ================= */}
         <h3>Variants</h3>
 
         {product.variants.map((v, index) => (

@@ -63,7 +63,7 @@
    =============================== */
 
 button {
-  padding: 10px 16px;
+  padding: 5px 8px;
   border-radius: 8px;
   border: none;
   font-size: 14px;
@@ -365,6 +365,109 @@ button {
   padding: 2px 6px;
   border-radius: 12px;
   margin-left: 6px;
+
+
+/* ================= MOQ (MINIMUM ORDER QUANTITY) ================= */
+
+.form-group {
+  margin: 14px 0;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Checkbox row */
+.form-group label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #111;
+  cursor: pointer;
+}
+
+/* MOQ input */
+.admin-container input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  margin-top: 8px;
+  outline: none;
+}
+
+.admin-container input[type="number"]:focus {
+  border-color: #111;
+}
+
+/* MOQ helper text (if you add later) */
+.moq-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* ================= VARIANT BOX REFINEMENT ================= */
+
+.variant-box {
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.variant-box input {
+  margin-bottom: 8px;
+}
+
+/* Remove button inside variant */
+.variant-box button {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.variant-box button:hover {
+  background: #fecaca;
+}
+
+/* ================= SAVE BUTTON ================= */
+
+.save-btn {
+  margin-top: 20px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background: #000;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .variant-box {
+    padding: 12px;
+  }
+
+  .save-btn {
+    width: 100%;
+  }
+}
 }
 
 

@@ -10,9 +10,15 @@ const AddProduct = () => {
     category: "",
     imageUrl: "",
     description: "",
+    occasion: "",
     variants: [],
+
+    // ✅ MOQ (NEW)
+    enforceMinQuantity: false,
+    minOrderQuantity: "",
   });
 
+  /* ================= VARIANTS ================= */
   const addVariant = () => {
     setProduct({
       ...product,
@@ -36,10 +42,20 @@ const AddProduct = () => {
     setProduct({ ...product, variants: updatedVariants });
   };
 
+  /* ================= SUBMIT ================= */
   const handleSubmit = async () => {
     try {
-      await createProduct(product);
+      const payload = {
+        ...product,
+        minOrderQuantity: product.enforceMinQuantity
+          ? Number(product.minOrderQuantity)
+          : null,
+      };
+
+      await createProduct(payload);
+
       alert("Product added successfully");
+
       setProduct({
         name: "",
         category: "",
@@ -47,6 +63,8 @@ const AddProduct = () => {
         description: "",
         occasion: "",
         variants: [],
+        enforceMinQuantity: false,
+        minOrderQuantity: "",
       });
     } catch (error) {
       alert("Error adding product");
@@ -57,19 +75,23 @@ const AddProduct = () => {
   return (
     <>
       <AdminNavbar />
+
       <div className="admin-container">
         <h2>Add Product</h2>
+
         <input
           placeholder="Product Name"
           value={product.name}
           onChange={(e) => setProduct({ ...product, name: e.target.value })}
         />
+
         <input
-          placeholder="Category"
+          placeholder="Category (slug format)"
           value={product.category}
           onChange={(e) => setProduct({ ...product, category: e.target.value })}
         />
 
+        {/* ================= OCCASION ================= */}
         <div className="form-group">
           <select
             value={product.occasion}
@@ -91,6 +113,7 @@ const AddProduct = () => {
           value={product.imageUrl}
           onChange={(e) => setProduct({ ...product, imageUrl: e.target.value })}
         />
+
         <textarea
           placeholder="Description"
           value={product.description}
@@ -98,7 +121,46 @@ const AddProduct = () => {
             setProduct({ ...product, description: e.target.value })
           }
         />
+
+        {/* ================= MOQ SECTION ================= */}
+        <div className="form-group">
+          <label style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <input
+              type="checkbox"
+              checked={product.enforceMinQuantity}
+              onChange={(e) =>
+                setProduct({
+                  ...product,
+                  enforceMinQuantity: e.target.checked,
+                  minOrderQuantity: e.target.checked
+                    ? product.minOrderQuantity
+                    : "",
+                })
+              }
+            />
+            Enforce Minimum Order Quantity
+          </label>
+        </div>
+
+        {product.enforceMinQuantity && (
+          <input
+            type="number"
+            min="1"
+            placeholder="Minimum Quantity Required"
+            value={product.minOrderQuantity}
+            onChange={(e) =>
+              setProduct({
+                ...product,
+                minOrderQuantity: e.target.value,
+              })
+            }
+            required
+          />
+        )}
+
+        {/* ================= VARIANTS ================= */}
         <h3>Variants</h3>
+
         {product.variants.map((v, index) => (
           <div key={index} className="variant-box">
             <input
@@ -133,7 +195,9 @@ const AddProduct = () => {
             />
           </div>
         ))}
+
         <button onClick={addVariant}>+ Add Variant</button>
+
         <button className="save-btn" onClick={handleSubmit}>
           Save Product
         </button>

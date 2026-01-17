@@ -8,25 +8,27 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
 
-  /* ===== AUTH GUARD ===== */
+  /* ================= AUTH GUARD ================= */
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) navigate("/login");
   }, [navigate]);
 
-  /* ===== LOAD CART ===== */
+  /* ================= LOAD CART ================= */
   useEffect(() => {
     setCart(getCart());
   }, []);
 
+  /* ================= QTY UPDATE ================= */
   const updateQty = (index, delta) => {
     const updated = [...cart];
     const item = updated[index];
 
+    const minQty = item.enforceMinQuantity ? item.minOrderQuantity : 1;
+
     const newQty = item.cartQty + delta;
 
-    if (newQty < 1) return;
-    if (item.variant.availableQty && newQty > item.variant.availableQty) return;
+    if (newQty < minQty) return;
 
     item.cartQty = newQty;
     localStorage.setItem("cart", JSON.stringify(updated));
@@ -34,18 +36,21 @@ const Cart = () => {
     window.dispatchEvent(new Event("storage"));
   };
 
+  /* ================= REMOVE ================= */
   const handleRemove = (index) => {
     removeFromCart(index);
     setCart(getCart());
     window.dispatchEvent(new Event("storage"));
   };
 
+  /* ================= TOTAL ================= */
   const total = cart.reduce((sum, item) => sum + item.price * item.cartQty, 0);
 
-  const isCartInvalid = cart.some(
-    (item) =>
-      item.variant.availableQty && item.cartQty > item.variant.availableQty
-  );
+  /* ================= VALIDATION ================= */
+  const isCartInvalid = cart.some((item) => {
+    if (!item.enforceMinQuantity) return false;
+    return item.cartQty < item.minOrderQuantity;
+  });
 
   return (
     <>
@@ -64,80 +69,88 @@ const Cart = () => {
             </div>
           )}
 
-          {cart.map((item, index) => (
-            <div key={index} className="cart-item">
-              {/* PRODUCT IMAGE */}
-              <div
-                className="cart-item-image"
-                onClick={() => navigate(`/product/${item.productId}`)}
-              >
-                <img src={item.image} alt={item.productName} />
-              </div>
+          {cart.map((item, index) => {
+            const minQty = item.enforceMinQuantity ? item.minOrderQuantity : 1;
 
-              {/* INFO */}
-              <div className="cart-item-info">
-                <h4
-                  className="clickable"
+            const isBelowMin =
+              item.enforceMinQuantity && item.cartQty < item.minOrderQuantity;
+
+            return (
+              <div key={index} className="cart-item">
+                {/* IMAGE */}
+                <div
+                  className="cart-item-image"
                   onClick={() => navigate(`/product/${item.productId}`)}
                 >
-                  {item.productName}
-                </h4>
-
-                <p>
-                  {item.variant.material} • {item.variant.shape} •{" "}
-                  {item.variant.size}
-                </p>
-
-                {/* CUSTOM IMAGES (NEW) */}
-                {item.customImages?.length > 0 && (
-                  <div className="cart-custom-images">
-                    {item.customImages.map((img, i) => (
-                      <img key={i} src={img} alt="custom upload" />
-                    ))}
-                  </div>
-                )}
-
-                {/* AVAILABLE */}
-                <div className="cart-availability-row">
-                  Available: <span>{item.variant.availableQty ?? "-"}</span>
+                  <img src={item.image} alt={item.productName} />
                 </div>
 
-                {/* QTY CONTROLS */}
-                <div className="cart-qty-row">
-                  <span>Quantity:</span>
-                  <div className="cart-qty-controls">
-                    <button
-                      disabled={item.cartQty <= 1}
-                      onClick={() => updateQty(index, -1)}
-                    >
-                      −
-                    </button>
-                    <span>{item.cartQty}</span>
-                    <button
-                      disabled={
-                        item.variant.availableQty &&
-                        item.cartQty >= item.variant.availableQty
-                      }
-                      onClick={() => updateQty(index, +1)}
-                    >
-                      +
-                    </button>
+                {/* INFO */}
+                <div className="cart-item-info">
+                  <h4
+                    className="clickable"
+                    onClick={() => navigate(`/product/${item.productId}`)}
+                  >
+                    {item.productName}
+                  </h4>
+
+                  <p>
+                    {item.variant.material} • {item.variant.shape} •{" "}
+                    {item.variant.size}
+                  </p>
+
+                  {/* CUSTOM IMAGES */}
+                  {item.customImages?.length > 0 && (
+                    <div className="cart-custom-images">
+                      {item.customImages.map((img, i) => (
+                        <img key={i} src={img} alt="custom upload" />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* MOQ INFO */}
+                  {item.enforceMinQuantity && (
+                    <div className="cart-min-qty">
+                      Minimum order: <b>{item.minOrderQuantity}</b>
+                    </div>
+                  )}
+
+                  {/* QTY */}
+                  <div className="cart-qty-row">
+                    <span>Quantity:</span>
+                    <div className="cart-qty-controls">
+                      <button
+                        disabled={item.cartQty <= minQty}
+                        onClick={() => updateQty(index, -1)}
+                      >
+                        −
+                      </button>
+                      <span>{item.cartQty}</span>
+                      <button onClick={() => updateQty(index, +1)}>+</button>
+                    </div>
                   </div>
+
+                  {/* WARNING */}
+                  {isBelowMin && (
+                    <div className="cart-warning">
+                      Minimum {item.minOrderQuantity} quantity required
+                    </div>
+                  )}
+                </div>
+
+                {/* ACTIONS */}
+                <div className="cart-item-actions">
+                  <div className="cart-price">₹{item.price * item.cartQty}</div>
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemove(index)}
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
-
-              {/* ACTIONS */}
-              <div className="cart-item-actions">
-                <div className="cart-price">₹{item.price * item.cartQty}</div>
-                <button
-                  className="remove-btn"
-                  onClick={() => handleRemove(index)}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {cart.length > 0 && (
             <div className="cart-summary">
@@ -162,4 +175,3 @@ const Cart = () => {
 };
 
 export default Cart;
-    

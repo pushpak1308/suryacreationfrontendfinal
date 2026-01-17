@@ -249,4 +249,21 @@
   background: #000;
   transition: width 0.3s ease;
 }
+/* ================= MINIMUM ORDER QUANTITY ================= */
+
+.min-qty-info {
+  margin: 10px 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #dc2626; /* RED */
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* Small screens */
+@media (max-width: 768px) {
+  .min-qty-info {
+    font-size: 15px;
+  }
+}
 
