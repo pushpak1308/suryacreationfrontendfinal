@@ -18,7 +18,8 @@ const ProductDetail = () => {
 
   const [cartQty, setCartQty] = useState(1);
   const [price, setPrice] = useState(0);
-  const [customImages, setCustomImages] = useState([]);
+  const [customImages] = useState([]);
+
 
   /* ================= FETCH PRODUCT ================= */
   useEffect(() => {
