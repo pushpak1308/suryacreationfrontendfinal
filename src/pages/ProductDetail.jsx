@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { addToCart } from "../utils/cartUtils";
 import Navbar from "../components/Navbar";
@@ -18,8 +18,15 @@ const ProductDetail = () => {
 
   const [cartQty, setCartQty] = useState(1);
   const [price, setPrice] = useState(0);
-  const [customImages] = useState([]);
 
+  /* ✅ Gallery */
+  const [activeMedia, setActiveMedia] = useState({
+    type: "image",
+    url: "",
+  });
+
+  // ✅ you said URLs will come from admin panel (no custom upload here)
+  const customImages = [];
 
   /* ================= FETCH PRODUCT ================= */
   useEffect(() => {
@@ -28,15 +35,16 @@ const ProductDetail = () => {
       .then((data) => {
         setProduct(data);
 
-        const v = data.variants[0];
+        const v = data.variants?.[0];
 
-        setSelected({
-          variantValue: v.variantValue,
-          shape: v.shape,
-          size: v.size,
-        });
-
-        setPrice(v.price);
+        if (v) {
+          setSelected({
+            variantValue: v.variantValue,
+            shape: v.shape,
+            size: v.size,
+          });
+          setPrice(v.price);
+        }
 
         const initialQty =
           data.enforceMinQuantity && data.minOrderQuantity
@@ -44,13 +52,46 @@ const ProductDetail = () => {
             : 1;
 
         setCartQty(initialQty);
-      });
+
+        // ✅ Default media set
+        const images = data.images?.length
+          ? data.images
+          : data.imageUrl
+          ? [data.imageUrl]
+          : [];
+
+        const firstImg = images[0] || "";
+        setActiveMedia({ type: "image", url: firstImg });
+      })
+      .catch((err) => console.error(err));
   }, [id]);
+
+  /* ================= MEDIA LIST (FIXED HOOK) ================= */
+  const mediaList = useMemo(() => {
+    if (!product) return [];
+
+    const images = product.images?.length
+      ? product.images
+      : product.imageUrl
+      ? [product.imageUrl]
+      : [];
+
+    const videos = product.videos?.length ? product.videos : [];
+
+    const normalizedImages = images
+      .filter(Boolean)
+      .map((url) => ({ type: "image", url }));
+
+    const normalizedVideos = videos
+      .filter(Boolean)
+      .map((url) => ({ type: "video", url }));
+
+    return [...normalizedImages, ...normalizedVideos];
+  }, [product]);
 
   if (!product) return <p>Loading...</p>;
 
   /* ================= VARIANT GROUPING ================= */
-
   const variantsGroupedByType = product.variants.reduce((acc, v) => {
     if (!acc[v.variantType]) acc[v.variantType] = [];
     acc[v.variantType].push(v);
@@ -71,12 +112,9 @@ const ProductDetail = () => {
     ),
   ];
 
-    /* ================= SELECTION HANDLERS ================= */
-    
-
+  /* ================= SELECTION HANDLERS ================= */
   const selectVariantValue = (value) => {
     const first = product.variants.find((v) => v.variantValue === value);
-
     if (!first) return;
 
     setSelected({
@@ -99,7 +137,7 @@ const ProductDetail = () => {
 
     if (field === "shape") {
       const first = variantsByValue.find((v) => v.shape === value);
-      updated = { ...updated, size: first.size };
+      if (first) updated = { ...updated, size: first.size };
     }
 
     const match = product.variants.find(
@@ -119,14 +157,28 @@ const ProductDetail = () => {
     }
   };
 
+  const renderOptions = (title, field, values) => (
+    <div className="option-group">
+      <div className="option-title">{title}</div>
+      <div className="option-grid">
+        {values.map((val) => (
+          <div
+            key={val}
+            className={`option-card ${selected[field] === val ? "active" : ""}`}
+            onClick={() => selectOption(field, val)}
+          >
+            {val}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   /* ================= MOQ ================= */
-
   const minQty = product.enforceMinQuantity ? product.minOrderQuantity : 1;
-
   const canProceed = cartQty >= minQty;
 
   /* ================= CART ================= */
-
   const handleAddToCart = () => {
     if (!canProceed) {
       alert(`Minimum order quantity is ${minQty}`);
@@ -181,35 +233,48 @@ const ProductDetail = () => {
     navigate("/checkout?mode=buynow");
   };
 
-  const renderOptions = (title, field, values) => (
-    <div className="option-group">
-      <div className="option-title">{title}</div>
-      <div className="option-grid">
-        {values.map((val) => (
-          <div
-            key={val}
-            className={`option-card ${selected[field] === val ? "active" : ""}`}
-            onClick={() => selectOption(field, val)}
-          >
-            {val}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
   return (
     <>
       <Navbar />
 
       <div className="product-detail">
         <div className="product-wrapper">
-          {/* IMAGE */}
+          {/* ✅ MEDIA GALLERY */}
           <div className="product-image">
-            <img src={product.imageUrl} alt={product.name} />
+            <div className="pd-main-media">
+              {activeMedia.type === "video" ? (
+                <video src={activeMedia.url} controls className="pd-main-img" />
+              ) : (
+                <img
+                  src={activeMedia.url || product.imageUrl}
+                  alt={product.name}
+                  className="pd-main-img"
+                />
+              )}
+            </div>
+
+            {mediaList.length > 1 && (
+              <div className="pd-thumbs">
+                {mediaList.map((m, idx) => (
+                  <div
+                    key={idx}
+                    className={`pd-thumb ${
+                      activeMedia.url === m.url ? "active" : ""
+                    }`}
+                    onClick={() => setActiveMedia(m)}
+                  >
+                    {m.type === "video" ? (
+                      <div className="pd-video-thumb">▶</div>
+                    ) : (
+                      <img src={m.url} alt="thumb" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* INFO */}
+          {/* ✅ PRODUCT INFO */}
           <div className="product-info">
             <h2>{product.name}</h2>
             <p className="product-desc">{product.description}</p>
@@ -221,7 +286,7 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* VARIANT TYPES AS HEADERS */}
+            {/* Variant Type Headers */}
             {Object.entries(variantsGroupedByType).map(([type, variants]) => (
               <div key={type} className="option-group">
                 <div className="option-title">{type}</div>

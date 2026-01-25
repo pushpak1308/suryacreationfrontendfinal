@@ -13,10 +13,18 @@ const AddProduct = () => {
     occasion: "",
     variants: [],
 
-    // ✅ MOQ (NEW)
+    // ✅ MOQ
     enforceMinQuantity: false,
     minOrderQuantity: "",
+
+    // ✅ MULTI MEDIA
+    images: [],
+    videos: [],
   });
+
+  // ✅ Input temp states
+  const [newImageUrl, setNewImageUrl] = useState("");
+  const [newVideoUrl, setNewVideoUrl] = useState("");
 
   /* ================= VARIANTS ================= */
   const addVariant = () => {
@@ -42,14 +50,72 @@ const AddProduct = () => {
     setProduct({ ...product, variants: updatedVariants });
   };
 
+  /* ================= MEDIA HELPERS ================= */
+  const addImageUrl = () => {
+    if (!newImageUrl.trim()) return;
+
+    const url = newImageUrl.trim();
+
+    // avoid duplicates
+    if (product.images.includes(url)) {
+      alert("Image already added");
+      return;
+    }
+
+    setProduct((prev) => ({
+      ...prev,
+      images: [...prev.images, url],
+    }));
+
+    setNewImageUrl("");
+  };
+
+  const removeImageUrl = (index) => {
+    setProduct((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addVideoUrl = () => {
+    if (!newVideoUrl.trim()) return;
+
+    const url = newVideoUrl.trim();
+
+    if (product.videos.includes(url)) {
+      alert("Video already added");
+      return;
+    }
+
+    setProduct((prev) => ({
+      ...prev,
+      videos: [...prev.videos, url],
+    }));
+
+    setNewVideoUrl("");
+  };
+
+  const removeVideoUrl = (index) => {
+    setProduct((prev) => ({
+      ...prev,
+      videos: prev.videos.filter((_, i) => i !== index),
+    }));
+  };
+
   /* ================= SUBMIT ================= */
   const handleSubmit = async () => {
     try {
       const payload = {
         ...product,
+
+        // ✅ MOQ payload
         minOrderQuantity: product.enforceMinQuantity
           ? Number(product.minOrderQuantity)
           : null,
+
+        // ✅ ensure arrays always exist
+        images: product.images || [],
+        videos: product.videos || [],
       };
 
       await createProduct(payload);
@@ -65,7 +131,12 @@ const AddProduct = () => {
         variants: [],
         enforceMinQuantity: false,
         minOrderQuantity: "",
+        images: [],
+        videos: [],
       });
+
+      setNewImageUrl("");
+      setNewVideoUrl("");
     } catch (error) {
       alert("Error adding product");
       console.error(error);
@@ -108,12 +179,82 @@ const AddProduct = () => {
           </select>
         </div>
 
+        {/* MAIN IMAGE URL */}
         <input
-          placeholder="Image URL"
+          placeholder="Main Image URL"
           value={product.imageUrl}
           onChange={(e) => setProduct({ ...product, imageUrl: e.target.value })}
         />
 
+        {/* ================= MULTIPLE IMAGES ================= */}
+        <h3>Additional Images</h3>
+
+        <div className="media-row">
+          <input
+            placeholder="Paste Image URL"
+            value={newImageUrl}
+            onChange={(e) => setNewImageUrl(e.target.value)}
+          />
+          <button type="button" className="media-add-btn" onClick={addImageUrl}>
+            + Add
+          </button>
+        </div>
+
+        {product.images.length > 0 && (
+          <div className="media-preview-grid">
+            {product.images.map((url, idx) => (
+              <div key={idx} className="media-preview-card">
+                <img
+                  src={url}
+                  alt="preview"
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+                <button
+                  type="button"
+                  className="media-preview-remove"
+                  onClick={() => removeImageUrl(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ================= VIDEOS ================= */}
+        <h3>Videos</h3>
+
+        <div className="media-row">
+          <input
+            placeholder="Paste Video URL (.mp4 or YouTube)"
+            value={newVideoUrl}
+            onChange={(e) => setNewVideoUrl(e.target.value)}
+          />
+          <button type="button" className="media-add-btn" onClick={addVideoUrl}>
+            + Add
+          </button>
+        </div>
+
+        {product.videos.length > 0 && (
+          <div className="video-preview-grid">
+            {product.videos.map((url, idx) => (
+              <div key={idx} className="video-preview-card">
+                <div className="video-label">🎬 Video</div>
+                <div className="video-url">{url}</div>
+
+                <button
+                  type="button"
+                  className="media-preview-remove"
+                  onClick={() => removeVideoUrl(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* DESCRIPTION */}
         <textarea
           placeholder="Description"
           value={product.description}
@@ -165,38 +306,46 @@ const AddProduct = () => {
           <div key={index} className="variant-box">
             <input
               placeholder="Variant Type"
+              value={v.variantType}
               onChange={(e) =>
                 updateVariant(index, "variantType", e.target.value)
               }
             />
             <input
               placeholder="Variant Value"
+              value={v.variantValue}
               onChange={(e) =>
                 updateVariant(index, "variantValue", e.target.value)
               }
             />
             <input
               placeholder="Shape"
+              value={v.shape}
               onChange={(e) => updateVariant(index, "shape", e.target.value)}
             />
             <input
               placeholder="Size"
+              value={v.size}
               onChange={(e) => updateVariant(index, "size", e.target.value)}
             />
             <input
               type="number"
               placeholder="Quantity"
+              value={v.quantity}
               onChange={(e) => updateVariant(index, "quantity", e.target.value)}
             />
             <input
               type="number"
               placeholder="Price"
+              value={v.price}
               onChange={(e) => updateVariant(index, "price", e.target.value)}
             />
           </div>
         ))}
 
-        <button onClick={addVariant}>+ Add Variant</button>
+        <button type="button" onClick={addVariant}>
+          + Add Variant
+        </button>
 
         <button className="save-btn" onClick={handleSubmit}>
           Save Product

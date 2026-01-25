@@ -25,7 +25,6 @@ const Cart = () => {
     const item = updated[index];
 
     const minQty = item.enforceMinQuantity ? item.minOrderQuantity : 1;
-
     const newQty = item.cartQty + delta;
 
     if (newQty < minQty) return;
@@ -51,6 +50,25 @@ const Cart = () => {
     if (!item.enforceMinQuantity) return false;
     return item.cartQty < item.minOrderQuantity;
   });
+
+  /* ================= VARIANT DISPLAY (NEW + OLD SUPPORT) ================= */
+  const getVariantText = (item) => {
+    const v = item.variant || {};
+
+    // ✅ OLD FORMAT SUPPORT
+    const material = v.material || "";
+
+    // ✅ NEW FORMAT SUPPORT
+    const value = v.value || "";
+
+    const shape = v.shape || "";
+    const size = v.size || "";
+
+    // If new format exists use that else old
+    const variantValue = value || material || "-";
+
+    return `${variantValue} • ${shape} • ${size}`;
+  };
 
   return (
     <>
@@ -94,10 +112,8 @@ const Cart = () => {
                     {item.productName}
                   </h4>
 
-                  <p>
-                    {item.variant.material} • {item.variant.shape} •{" "}
-                    {item.variant.size}
-                  </p>
+                  {/* ✅ UPDATED VARIANT DISPLAY */}
+                  <p>{getVariantText(item)}</p>
 
                   {/* CUSTOM IMAGES */}
                   {item.customImages?.length > 0 && (

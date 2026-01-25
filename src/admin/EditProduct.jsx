@@ -11,6 +11,10 @@ const EditProduct = () => {
 
   const [product, setProduct] = useState(null);
 
+  // ✅ Input temp states
+  const [newImageUrl, setNewImageUrl] = useState("");
+  const [newVideoUrl, setNewVideoUrl] = useState("");
+
   /* ===============================
      LOAD PRODUCT
      =============================== */
@@ -23,11 +27,58 @@ const EditProduct = () => {
         // ✅ MOQ (NULL SAFE)
         enforceMinQuantity: data.enforceMinQuantity || false,
         minOrderQuantity: data.minOrderQuantity || "",
+
+        // ✅ MULTI MEDIA NULL SAFE
+        images: Array.isArray(data.images) ? data.images : [],
+        videos: Array.isArray(data.videos) ? data.videos : [],
       });
     });
   }, [id]);
 
   if (!product) return <p>Loading...</p>;
+
+  /* ===============================
+     MEDIA HELPERS
+     =============================== */
+  const addImageUrl = () => {
+    if (!newImageUrl.trim()) return;
+    const url = newImageUrl.trim();
+
+    if (product.images.includes(url)) {
+      alert("Image already added");
+      return;
+    }
+
+    setProduct((prev) => ({ ...prev, images: [...prev.images, url] }));
+    setNewImageUrl("");
+  };
+
+  const removeImageUrl = (index) => {
+    setProduct((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addVideoUrl = () => {
+    if (!newVideoUrl.trim()) return;
+    const url = newVideoUrl.trim();
+
+    if (product.videos.includes(url)) {
+      alert("Video already added");
+      return;
+    }
+
+    setProduct((prev) => ({ ...prev, videos: [...prev.videos, url] }));
+    setNewVideoUrl("");
+  };
+
+  const removeVideoUrl = (index) => {
+    setProduct((prev) => ({
+      ...prev,
+      videos: prev.videos.filter((_, i) => i !== index),
+    }));
+  };
 
   /* ===============================
      VARIANT HELPERS
@@ -65,7 +116,7 @@ const EditProduct = () => {
      =============================== */
   const handleSave = async () => {
     const payload = {
-      ...product, // ✅ KEEP EVERYTHING (IMPORTANT)
+      ...product, // ✅ KEEP EVERYTHING
 
       // Normalize optional fields
       occasion: product.occasion || null,
@@ -75,6 +126,10 @@ const EditProduct = () => {
       minOrderQuantity: product.enforceMinQuantity
         ? Number(product.minOrderQuantity)
         : null,
+
+      // ✅ Multi URLs
+      images: product.images || [],
+      videos: product.videos || [],
 
       // Normalize variants
       variants: product.variants.map((v) => ({
@@ -88,7 +143,6 @@ const EditProduct = () => {
     alert("Product updated successfully");
     navigate("/admin/products");
   };
-
 
   return (
     <>
@@ -111,10 +165,78 @@ const EditProduct = () => {
         />
 
         <input
-          placeholder="Image URL"
+          placeholder="Main Image URL"
           value={product.imageUrl}
           onChange={(e) => setProduct({ ...product, imageUrl: e.target.value })}
         />
+
+        {/* ================= MULTIPLE IMAGES ================= */}
+        <h3>Additional Images</h3>
+
+        <div className="media-row">
+          <input
+            placeholder="Paste Image URL"
+            value={newImageUrl}
+            onChange={(e) => setNewImageUrl(e.target.value)}
+          />
+          <button type="button" className="media-add-btn" onClick={addImageUrl}>
+            + Add
+          </button>
+        </div>
+
+        {product.images.length > 0 && (
+          <div className="media-preview-grid">
+            {product.images.map((url, idx) => (
+              <div key={idx} className="media-preview-card">
+                <img
+                  src={url}
+                  alt="preview"
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+                <button
+                  type="button"
+                  className="media-preview-remove"
+                  onClick={() => removeImageUrl(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ================= VIDEOS ================= */}
+        <h3>Videos</h3>
+
+        <div className="media-row">
+          <input
+            placeholder="Paste Video URL (.mp4 or YouTube)"
+            value={newVideoUrl}
+            onChange={(e) => setNewVideoUrl(e.target.value)}
+          />
+          <button type="button" className="media-add-btn" onClick={addVideoUrl}>
+            + Add
+          </button>
+        </div>
+
+        {product.videos.length > 0 && (
+          <div className="video-preview-grid">
+            {product.videos.map((url, idx) => (
+              <div key={idx} className="video-preview-card">
+                <div className="video-label">🎬 Video</div>
+                <div className="video-url">{url}</div>
+
+                <button
+                  type="button"
+                  className="media-preview-remove"
+                  onClick={() => removeVideoUrl(idx)}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* ================= OCCASION ================= */}
         <div className="form-group">
@@ -220,11 +342,16 @@ const EditProduct = () => {
               value={v.price}
               onChange={(e) => updateVariant(index, "price", e.target.value)}
             />
-            <button onClick={() => removeVariant(index)}>Remove</button>
+
+            <button type="button" onClick={() => removeVariant(index)}>
+              Remove
+            </button>
           </div>
         ))}
 
-        <button onClick={addVariant}>+ Add Variant</button>
+        <button type="button" onClick={addVariant}>
+          + Add Variant
+        </button>
 
         <button className="save-btn" onClick={handleSave}>
           Save Changes
