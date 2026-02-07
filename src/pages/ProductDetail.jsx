@@ -4,6 +4,11 @@ import { addToCart } from "../utils/cartUtils";
 import Navbar from "../components/Navbar";
 import "../styles/productDetail.css";
 
+/* ✅ Cloudinary config */
+const CLOUD_NAME = "ddvdtpss6";
+const UPLOAD_PRESET = "surya-creations";
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,8 +30,9 @@ const ProductDetail = () => {
     url: "",
   });
 
-  // ✅ you said URLs will come from admin panel (no custom upload here)
-  const customImages = [];
+  /* ✅ upload state */
+  const [customImages, setCustomImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
   /* ================= FETCH PRODUCT ================= */
   useEffect(() => {
@@ -53,7 +59,6 @@ const ProductDetail = () => {
 
         setCartQty(initialQty);
 
-        // ✅ Default media set
         const images = data.images?.length
           ? data.images
           : data.imageUrl
@@ -66,7 +71,7 @@ const ProductDetail = () => {
       .catch((err) => console.error(err));
   }, [id]);
 
-  /* ================= MEDIA LIST (FIXED HOOK) ================= */
+  /* ================= MEDIA LIST ================= */
   const mediaList = useMemo(() => {
     if (!product) return [];
 
@@ -78,20 +83,15 @@ const ProductDetail = () => {
 
     const videos = product.videos?.length ? product.videos : [];
 
-    const normalizedImages = images
-      .filter(Boolean)
-      .map((url) => ({ type: "image", url }));
-
-    const normalizedVideos = videos
-      .filter(Boolean)
-      .map((url) => ({ type: "video", url }));
-
-    return [...normalizedImages, ...normalizedVideos];
+    return [
+      ...images.filter(Boolean).map((url) => ({ type: "image", url })),
+      ...videos.filter(Boolean).map((url) => ({ type: "video", url })),
+    ];
   }, [product]);
 
   if (!product) return <p>Loading...</p>;
 
-  /* ================= VARIANT GROUPING ================= */
+  /* ================= VARIANTS ================= */
   const variantsGroupedByType = product.variants.reduce((acc, v) => {
     if (!acc[v.variantType]) acc[v.variantType] = [];
     acc[v.variantType].push(v);
@@ -103,7 +103,6 @@ const ProductDetail = () => {
   );
 
   const availableShapes = [...new Set(variantsByValue.map((v) => v.shape))];
-
   const availableSizes = [
     ...new Set(
       variantsByValue
@@ -112,7 +111,6 @@ const ProductDetail = () => {
     ),
   ];
 
-  /* ================= SELECTION HANDLERS ================= */
   const selectVariantValue = (value) => {
     const first = product.variants.find((v) => v.variantValue === value);
     if (!first) return;
@@ -124,7 +122,6 @@ const ProductDetail = () => {
     });
 
     setPrice(first.price);
-
     setCartQty(
       product.enforceMinQuantity && product.minOrderQuantity
         ? product.minOrderQuantity
@@ -148,11 +145,7 @@ const ProductDetail = () => {
     );
 
     if (match) {
-      setSelected({
-        variantValue: match.variantValue,
-        shape: match.shape,
-        size: match.size,
-      });
+      setSelected(updated);
       setPrice(match.price);
     }
   };
@@ -174,62 +167,72 @@ const ProductDetail = () => {
     </div>
   );
 
+  /* ================= IMAGE UPLOAD ================= */
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    setUploading(true);
+
+    try {
+      for (const file of files) {
+        if (file.size > MAX_FILE_SIZE) continue;
+
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("upload_preset", UPLOAD_PRESET);
+
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+          { method: "POST", body: fd }
+        );
+
+        const data = await res.json();
+        if (data.secure_url) {
+          setCustomImages((prev) => [...prev, data.secure_url]);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    setUploading(false);
+  };
+
+  const removeCustomImage = (i) =>
+    setCustomImages((imgs) => imgs.filter((_, idx) => idx !== i));
+
   /* ================= MOQ ================= */
   const minQty = product.enforceMinQuantity ? product.minOrderQuantity : 1;
   const canProceed = cartQty >= minQty;
 
   /* ================= CART ================= */
+  const buildItem = () => ({
+    productId: product.id,
+    productName: product.name,
+    image: product.imageUrl,
+    variant: {
+      value: selected.variantValue,
+      shape: selected.shape,
+      size: selected.size,
+    },
+    price,
+    cartQty,
+    customImages,
+    enforceMinQuantity: product.enforceMinQuantity,
+    minOrderQuantity: product.minOrderQuantity,
+  });
+
   const handleAddToCart = () => {
-    if (!canProceed) {
-      alert(`Minimum order quantity is ${minQty}`);
-      return;
-    }
-
-    addToCart({
-      productId: product.id,
-      productName: product.name,
-      image: product.imageUrl,
-      variant: {
-        value: selected.variantValue,
-        shape: selected.shape,
-        size: selected.size,
-      },
-      price,
-      cartQty,
-      customImages,
-      enforceMinQuantity: product.enforceMinQuantity,
-      minOrderQuantity: product.minOrderQuantity,
-    });
-
+    if (!canProceed) return alert(`Minimum order quantity is ${minQty}`);
+    addToCart(buildItem());
     window.dispatchEvent(new Event("storage"));
     alert("Added to cart");
   };
 
   const handleBuyNow = () => {
-    if (!canProceed) {
-      alert(`Minimum order quantity is ${minQty}`);
-      return;
-    }
-
-    sessionStorage.setItem(
-      "BUY_NOW_ITEM",
-      JSON.stringify({
-        productId: product.id,
-        productName: product.name,
-        image: product.imageUrl,
-        variant: {
-          value: selected.variantValue,
-          shape: selected.shape,
-          size: selected.size,
-        },
-        price,
-        cartQty,
-        customImages,
-        enforceMinQuantity: product.enforceMinQuantity,
-        minOrderQuantity: product.minOrderQuantity,
-      })
-    );
-
+    if (!canProceed) return alert(`Minimum order quantity is ${minQty}`);
+    sessionStorage.setItem("BUY_NOW_ITEM", JSON.stringify(buildItem()));
     navigate("/checkout?mode=buynow");
   };
 
@@ -239,7 +242,7 @@ const ProductDetail = () => {
 
       <div className="product-detail">
         <div className="product-wrapper">
-          {/* ✅ MEDIA GALLERY */}
+          {/* MEDIA */}
           <div className="product-image">
             <div className="pd-main-media">
               {activeMedia.type === "video" ? (
@@ -274,23 +277,20 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* ✅ PRODUCT INFO */}
+          {/* INFO */}
           <div className="product-info">
             <h2>{product.name}</h2>
             <p className="product-desc">{product.description}</p>
 
-            {/* MOQ */}
             {product.enforceMinQuantity && (
               <div className="min-qty-info">
                 Minimum order quantity: <b>{product.minOrderQuantity}</b>
               </div>
             )}
 
-            {/* Variant Type Headers */}
             {Object.entries(variantsGroupedByType).map(([type, variants]) => (
               <div key={type} className="option-group">
                 <div className="option-title">{type}</div>
-
                 <div className="option-grid">
                   {[...new Set(variants.map((v) => v.variantValue))].map(
                     (value) => (
@@ -311,9 +311,35 @@ const ProductDetail = () => {
 
             {availableShapes.length > 0 &&
               renderOptions("Shape", "shape", availableShapes)}
-
             {availableSizes.length > 0 &&
               renderOptions("Size", "size", availableSizes)}
+
+            {/* ✅ Upload block — classnames matched to OLD CSS */}
+            <div className="custom-upload">
+              <div className="upload-title">Upload Images</div>
+
+              <label className="upload-box">
+                <span>Select images</span>
+                <input
+                  type="file"
+                  hidden
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+              </label>
+
+              {uploading && <div className="upload-warning">Uploading...</div>}
+
+              <div className="upload-preview-grid">
+                {customImages.map((u, i) => (
+                  <div key={i} className="preview-item">
+                    <img src={u} alt="custom" />
+                    <button onClick={() => removeCustomImage(i)}>×</button>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* QTY */}
             <div className="qty-section">
@@ -329,10 +355,8 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* PRICE */}
             <div className="price-box">₹{price}</div>
 
-            {/* CTA */}
             <div className="cta-group">
               <button
                 className="add-cart-btn"
@@ -341,7 +365,6 @@ const ProductDetail = () => {
               >
                 Add to Cart
               </button>
-
               <button
                 className="buy-now-btn"
                 disabled={!canProceed}
