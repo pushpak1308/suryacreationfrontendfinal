@@ -11,14 +11,19 @@ const toSlug = (text) =>
 
 const categories = [
   {
+    name: "Holi Special",
+    image:
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1770657529/173090-holi_ajz6sf.jpg",
+  },
+  {
     name: "Miniature Frames",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767285352/Screenshot_2026-01-01_220515_vaqyo7.png",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360167/Miniature_frames_rdodk8.jpg",
   },
   {
     name: "Labels",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767280524/Sheet-label_1725451536_mrfmqg.webp",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360144/Labels_k8h7ww.jpg",
   },
   {
     name: "Customized Gifts",
@@ -28,12 +33,12 @@ const categories = [
   {
     name: "Customized Frames",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767282478/Screenshot_2026-01-01_211722_hhzdtl.png",
+      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767281931/WhatsApp_Image_2025-12-14_at_5.55.51_PM_znxtk9.jpg",
   },
   {
     name: "Custom Acrylic Frames",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767282888/Screenshot_2026-01-01_212417_j3cy2i.png",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769361269/mini_mint_olodki.jpg",
   },
   {
     name: "Combos and Hampers",
@@ -43,17 +48,17 @@ const categories = [
   {
     name: "Stickers",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767284452/WhatsApp_Image_2025-12-14_at_6.41.37_PM_jnwknl.jpg",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360497/stickers_ygpgdr.jpg",
   },
   {
     name: "Gifts",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767283590/Screenshot_2026-01-01_213557_dmxmgi.png",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360513/gifts_ngnjlq.jpg",
   },
   {
     name: "Photo Frames",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767283656/Screenshot_2026-01-01_213708_ugqhqv.png",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360534/frames_virbr3.jpg",
   },
   {
     name: "Clocks",
@@ -63,27 +68,27 @@ const categories = [
   {
     name: "Historical Paintings",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767284820/WhatsApp_Image_2025-12-14_at_7.08.14_PM_1_xikgmk.jpg",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360564/historical_svcazo.jpg",
   },
   {
     name: "Scenery",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767284979/WhatsApp_Image_2025-12-14_at_7.10.49_PM_szse95.jpg",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360585/scenery_hbhywl.jpg",
   },
   {
     name: "Albums",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767285607/WhatsApp_Image_2025-12-14_at_4.44.44_PM_jkx8bg.jpg",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360607/albums_jp8kd0.jpg",
   },
   {
     name: "Business Needs",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767285136/Screenshot_2026-01-01_220150_j7n3ok.png",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360628/bill_iuendy.jpg",
   },
   {
     name: "Packaging Boxes",
     image:
-      "https://res.cloudinary.com/dier6hkbz/image/upload/v1767280357/5.1_1920x_ra0n6y.webp",
+      "https://res.cloudinary.com/ddahsfbcb/image/upload/v1769360682/ChatGPT_Image_Jan_25_2026_10_23_50_PM_psak3m.png",
   },
 ];
 
